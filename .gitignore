@@ -1,0 +1,8 @@
+*.o
+*.d
+.clangd
+.vscode/
+*.tar.gz
+*.swap
+*~
+crossconnect
