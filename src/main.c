@@ -93,7 +93,17 @@ static void stop_ovpn(GtkButton *button, gpointer user_data) {
   }
 
   if (openvpn_pid > 0) {
-    kill(openvpn_pid, SIGTERM);
+    char buf[256];
+    snprintf(buf, sizeof(buf), "%d", openvpn_pid);
+    pid_t child = fork();
+    if (child == 0) {
+      execlp("pkexec", "pkexec", "/bin/kill", buf, NULL);
+
+      perror("execlp fail!");
+      gtk_window_destroy(GTK_WINDOW(w));
+    } else {
+      ; // do nothing
+    }
     openvpn_pid = -1;
   }
 
@@ -167,7 +177,7 @@ static void start_ovpn(GtkButton *button, gpointer user_data) {
     gtk_button_set_label(button, "Disconnect");
   g_signal_handlers_disconnect_by_func(button, G_CALLBACK(start_ovpn),
                                        user_data);
-    g_signal_connect(button, "clicked", G_CALLBACK(stop_ovpn), NULL);
+    g_signal_connect(button, "clicked", G_CALLBACK(stop_ovpn), user_data);
     GNotification *n = g_notification_new("CrossConnect: success!");
     g_notification_set_body(n, "Successfully started OpenVPN.");
     g_application_send_notification(G_APPLICATION(app), "crossconnect", n);
