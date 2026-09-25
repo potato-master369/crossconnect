@@ -6,6 +6,9 @@ LDLIBS = $(shell pkg-config --libs gtk4)
 TARGETS = crossconnect
 OBJ = main.o
 
+PREFIX ?= /usr/local
+DESKTOPDIR ?= $(PREFIX)/share/applications
+
 all: $(TARGETS)
 
 crossconnect: $(OBJ)
@@ -16,3 +19,10 @@ main.o: src/main.c
 
 clean:
 	rm -f $(OBJ) $(TARGETS)
+
+install:
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 crossconnect $(DESTDIR)$(PREFIX)/bin/crossconnect
+	install -d $(DESTDIR)$(DESKTOPDIR)
+	install -m 644 ass/crossconnect.desktop $(DESTDIR)$(DESKTOPDIR)/crossconnect.desktop
+

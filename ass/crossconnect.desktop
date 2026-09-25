@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OpenVPN CrossConnect
+Comment=OpenVPN connect, for the chads who use linux.
+
+Exec=crossconnect
+Terminal=false
+Categories=Accessories;Utility;
+Icon=network-vpn
