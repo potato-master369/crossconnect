@@ -4,7 +4,7 @@ LDFLAGS = -Wl,--gc-sections
 LDLIBS = $(shell pkg-config --libs gtk4)
 
 TARGETS = crossconnect
-OBJ = main.o
+OBJ = main.o config.o
 
 PREFIX ?= /usr/local
 DESKTOPDIR ?= $(PREFIX)/share/applications
@@ -15,6 +15,9 @@ crossconnect: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 main.o: src/main.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+config.o: src/config.c src/config.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

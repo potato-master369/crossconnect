@@ -9,6 +9,11 @@ typedef struct {
   char password[64];
 } cc_config_t;
 
+extern cc_config_t local_conf;
+
+void config_read_config(void);
+void config_write_conf(void);
+
 // path macros
 // resolve ~ to $HOME
 // excluding config.txt at the end

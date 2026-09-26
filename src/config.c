@@ -33,34 +33,37 @@ void config_read_config(void) {
   FILE *conf = fopen(path, "r");
   if (conf == NULL) {
     printf("Could not read config! Does %sconfig.txt exist?", CONFIGPATH);
-  } else {
+    return;
+  }
+
+  {
     // PARSE
     char *buf = (char *)malloc(300 * sizeof(char));
-    bool isbom = false;
     while (fgets(buf, 300, conf) != NULL) {
       buf[strcspn(buf, "\r\n")] = '\0';
+      char *line = buf;
       if ((unsigned char)buf[0] == 0xEF && (unsigned char)buf[1] == 0xBB &&
           (unsigned char)buf[2] == 0xBF) {
-        buf += 3;
-        isbom = true;
+        line += 3;
       }
 
-      int len = strlen(buf);
-      while (len > 0 && isspace((int)buf[len - 1])) {
-        buf[len - 1] = '\0';
+      int len = strlen(line);
+      while (len > 0 && isspace((int)line[len - 1])) {
+        line[len - 1] = '\0';
         len--;
       }
-      if (buf[0] == '/' && buf[1] == '/') {
+      if (line[0] == '/' && line[1] == '/') {
         // comment
         continue;
       }
-      if (strlen(buf) == 0) {
+      if (strlen(line) == 0) {
         continue;
       }
       int offset = 0;
-      char key[149], value[149];
-      sscanf(buf, "%49[^ =] = %n", key, &offset);
-      strncpy(value, buf + offset, sizeof(value) - 1);
+      char key[149] = {0}, value[149] = {0};
+      if (sscanf(line, "%49[^ =] = %n", key, &offset) != 1)
+        continue;
+      strncpy(value, line + offset, sizeof(value) - 1);
 #define MATCH(a) (strcmp(key, a) == 0)
 #define COPYKEY(a)                                                             \
   do {                                                                         \
@@ -82,8 +85,6 @@ void config_read_config(void) {
       if (MATCH("PASSWORD"))
         COPYKEY(password);
     }
-    if (isbom)
-      buf -= 3;
     free(buf);
   }
   fclose(conf);
